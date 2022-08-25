@@ -3,26 +3,30 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
+  Inject,
   NotFoundException,
   Param,
   Patch,
   Post,
   Query,
 } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { Request } from 'express';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 
 @Controller('coffees')
 export class CoffeesController {
-  constructor(private readonly coffeeService: CoffeesService) {}
+  constructor(
+    private readonly coffeeService: CoffeesService, // Para services no se usa Inject
+    @Inject(REQUEST) private readonly request: Request, // Inject Express Request
+  ) {}
 
   @Get()
-  findAll(@Query() paginateQuery) {
-    // const { limit, offset } = paginateQuery;
-    return this.coffeeService.findAll();
+  findAll(@Query() paginationQuery: PaginationQueryDto) {
+    return this.coffeeService.findAll(paginationQuery);
   }
 
   @Get(':id')
@@ -43,7 +47,7 @@ export class CoffeesController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateCoffeeDto: UpdateCoffeeDto) {
-    return `This is an update ${id}`;
+    return this.coffeeService.update(id, updateCoffeeDto);
   }
 
   @Delete(':id')
