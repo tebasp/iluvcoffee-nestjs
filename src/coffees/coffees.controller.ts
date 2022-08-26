@@ -12,7 +12,9 @@ import {
 } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
+import { Public } from 'src/common/decorators/public.decorator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
+import { ParseIntPipe } from 'src/common/pipes/parse-int.pipe';
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
@@ -24,6 +26,7 @@ export class CoffeesController {
     @Inject(REQUEST) private readonly request: Request, // Inject Express Request
   ) {}
 
+  @Public()
   @Get()
   findAll(@Query() paginationQuery: PaginationQueryDto) {
     return this.coffeeService.findAll(paginationQuery);
@@ -31,7 +34,8 @@ export class CoffeesController {
 
   @Get(':id')
   // if Transform: true in globalPipes, the id param is converted to String
-  findOne(@Param('id') id: string) {
+  // ParseIntPipe: is a custom Pipe, sirve solo a este param, toma su valor como arg
+  findOne(@Param('id', ParseIntPipe) id: string) {
     const coffee = this.coffeeService.findOne(id);
     if (!coffee) {
       // throw new HttpException(`Coffee ${id} not found`, HttpStatus.NOT_FOUND);

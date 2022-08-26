@@ -2,6 +2,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { ApiKeyGuard } from './common/guards/api-key.guard';
+import { TimeoutInterceptor } from './common/interceptors/timeout.interceptor';
+import { WrapResponseInterceptor } from './common/interceptors/wrap-response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +19,14 @@ async function bootstrap() {
     }),
   );
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Interceptors nos permite cambiar las request y las response
+  app.useGlobalInterceptors(
+    new WrapResponseInterceptor(),
+    new TimeoutInterceptor(),
+  );
+
+  // app.useGlobalGuards(new ApiKeyGuard()); // Util cuando el Guard no utiliza dependency injection
 
   await app.listen(3000);
 }

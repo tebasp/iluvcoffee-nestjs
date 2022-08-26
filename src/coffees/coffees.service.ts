@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
-import { ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { Repository } from 'typeorm';
